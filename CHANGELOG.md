@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-27
+
 ### Added
 
 - `applog` package: a reusable, structured JSON Lines logging module.
@@ -34,13 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a Go project template, now run Python checks (`ruff`, `black --check`,
   `mypy`, `pytest`) instead of Go tooling.
 
-### Added (template)
-
-- Initial project template: source layout, test scaffolding, CI/CD
-  workflows, and contributor documentation.
-
-## [0.1.0] - 2026-09-02
+## [0.0.0] - 2026-10-26
 
 ### Added
 
-- Initial release of the template repository.
+- Initial repository and project files using template.
