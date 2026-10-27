@@ -26,7 +26,7 @@ assignees: ""
 
 ## Environment
 
-- Go version:
+- Python version:
 - OS:
 - Application version / commit:
 
