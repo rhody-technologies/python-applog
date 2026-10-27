@@ -16,8 +16,9 @@
 
 ## Checklist
 
-- [ ] `gofmt -l .` reports no changes
-- [ ] `go vet ./...` passes
-- [ ] `go test ./...` passes
+- [ ] `black --check .` reports no changes
+- [ ] `ruff check .` passes
+- [ ] `mypy .` passes
+- [ ] `pytest` passes
 - [ ] `CHANGELOG.md` updated (if user-facing)
 - [ ] Documentation updated (if needed)
