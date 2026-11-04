@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import logging
+import re
+import uuid
 
 from applog.filters import ContextFilter
 from applog.formatter import JsonFormatter
@@ -109,3 +111,47 @@ def test_utc_vs_local_timestamp_formatting_runs_without_error() -> None:
     local_line = JsonFormatter(utc=False).format(record)
     assert json.loads(utc_line)["timestamp"]
     assert json.loads(local_line)["timestamp"]
+
+
+def test_log_id_is_present_and_a_uuid4_hex() -> None:
+    record = _make_record()
+    ContextFilter("my-app").filter(record)
+    payload = json.loads(JsonFormatter().format(record))
+    assert re.fullmatch(r"[0-9a-f]{32}", payload["log_id"])
+    assert uuid.UUID(payload["log_id"]).version == 4
+
+
+def test_log_id_is_unique_per_record() -> None:
+    log_filter = ContextFilter("my-app")
+    formatter = JsonFormatter()
+    ids = set()
+    for _ in range(1000):
+        record = _make_record()
+        log_filter.filter(record)
+        ids.add(json.loads(formatter.format(record))["log_id"])
+    assert len(ids) == 1000
+
+
+def test_log_id_is_stable_when_one_record_passes_through_the_filter_twice() -> None:
+    # configure() shares one filter across the file and console handlers, so a
+    # single record is filtered once per handler; both outputs must agree.
+    record = _make_record()
+    log_filter = ContextFilter("my-app")
+    log_filter.filter(record)
+    first = json.loads(JsonFormatter().format(record))["log_id"]
+    log_filter.filter(record)
+    second = json.loads(JsonFormatter().format(record))["log_id"]
+    assert first == second
+
+
+def test_log_id_is_generated_even_without_the_filter() -> None:
+    payload = json.loads(JsonFormatter().format(_make_record()))
+    assert re.fullmatch(r"[0-9a-f]{32}", payload["log_id"])
+
+
+def test_caller_supplied_log_id_extra_cannot_override_the_generated_id() -> None:
+    record = _make_record(extra={"log_id": "spoofed"})
+    ContextFilter("my-app").filter(record)
+    payload = json.loads(JsonFormatter().format(record))
+    assert payload["log_id"] != "spoofed"
+    assert payload["extra"] == {"log_id": "spoofed"}
