@@ -57,9 +57,13 @@ for an application where `configure()` is called once in `main.py` while
 ## What a log line looks like
 
 ```json
-{"timestamp": "2026-10-27T14:30:52.294+00:00", "level": "INFO", "app": "order-batch-app", "run_id": "9881fbb8efee432f8d4454dd5bb03d39", "logger": "examples.multi_module_app.services.worker", "module": "worker", "function": "process_batch", "line": 32, "message": "processed order", "pid": 99807, "thread": "MainThread", "extra": {"order_id": "A1", "total_cents": 1999}}
+{"timestamp": "2026-10-27T14:30:52.294+00:00", "log_id": "3f2b9c1e7a4d4f0e9b6a5d8c1e2f7a90", "level": "INFO", "app": "order-batch-app", "run_id": "9881fbb8efee432f8d4454dd5bb03d39", "logger": "examples.multi_module_app.services.worker", "module": "worker", "function": "process_batch", "line": 32, "message": "processed order", "pid": 99807, "thread": "MainThread", "extra": {"order_id": "A1", "total_cents": 1999}}
 ```
 
+- `log_id` — unique to this single log event (UUID4 hex, never reused across
+  events, runs or processes). Use it to reference or deduplicate one exact
+  line; when `console=True`, the file and console copies of an event share
+  the same `log_id`.
 - `app`, `run_id`, `logger`/`module`/`function`/`line`, `pid`, `thread` —
   identify exactly where and under which execution the event happened.
 - `message` — the formatted log message, same as stdlib `logging`.

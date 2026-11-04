@@ -5,8 +5,11 @@ from __future__ import annotations
 import json
 import logging
 import traceback
+import uuid
 from datetime import datetime, timezone
 from typing import Any
+
+from applog.filters import LOG_ID_STAMP_ATTR
 
 # Standard attributes every logging.LogRecord carries, plus the handful of
 # pseudo-attributes we compute ourselves. Anything else found on a record
@@ -15,7 +18,7 @@ from typing import Any
 # output under "extra" rather than being silently dropped.
 _STANDARD_RECORD_ATTRS = frozenset(
     logging.LogRecord("", 0, "", 0, "", (), None).__dict__.keys()
-) | {"message", "asctime", "app", "run_id"}
+) | {"message", "asctime", "app", "run_id", LOG_ID_STAMP_ATTR}
 
 
 class JsonFormatter(logging.Formatter):
@@ -35,6 +38,7 @@ class JsonFormatter(logging.Formatter):
         """Return ``record`` rendered as a single-line JSON string."""
         payload: dict[str, Any] = {
             "timestamp": self._timestamp(record),
+            "log_id": getattr(record, LOG_ID_STAMP_ATTR, None) or uuid.uuid4().hex,
             "level": record.levelname,
             "app": getattr(record, "app", None),
             "run_id": getattr(record, "run_id", None),

@@ -85,3 +85,19 @@ def test_run_id_context_tags_sub_task_events(tmp_path: Path) -> None:
 
     payloads = [json.loads(line) for line in log_path.read_text().splitlines()]
     assert [p["run_id"] for p in payloads] == [root_run_id, "sub-task-1", root_run_id]
+
+
+def test_every_line_has_a_distinct_log_id(tmp_path: Path) -> None:
+    log_path = tmp_path / "app.jsonl"
+    applog.configure("svc", log_path=log_path)
+
+    logger = logging.getLogger(__name__)
+    for index in range(50):
+        logger.info("event %d", index)
+
+    payloads = [json.loads(line) for line in log_path.read_text().splitlines()]
+    log_ids = [payload["log_id"] for payload in payloads]
+    assert len(log_ids) == 50
+    assert len(set(log_ids)) == 50
+    # Unlike run_id, log_id identifies one event, not the whole run.
+    assert len({payload["run_id"] for payload in payloads}) == 1

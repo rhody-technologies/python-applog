@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-04
+
+### Added
+
+- Every log line now includes a `log_id` field: a UUID4 hex string unique to
+  each log event. The file and console copies of one event share the same
+  `log_id`. A caller-supplied `extra={"log_id": ...}` stays under `extra` and
+  cannot override it.
+
 ## [0.1.0] - 2026-10-27
 
 ### Added
